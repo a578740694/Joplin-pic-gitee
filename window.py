@@ -168,8 +168,6 @@ class GridLayout(QWidget):
                     resp = requests.post(postUrl,data=params,timeout=20)
                     pic = resp.json().get("content").get("download_url")
 
-                    if(len(files) == 2):
-                        raise Exception()
                 except Exception as e:
                     if len(files) != 0:
 
