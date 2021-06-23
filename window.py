@@ -226,6 +226,9 @@ class GridLayout(QWidget):
             f.write(en);
             f.close()
 
+            date = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+            self.__log.logger.info("----------" + date + "----------")
+
             #查询包含 /![] 的笔记
             joplinSearch = "http://127.0.0.1:{}//search?query=/![]&type=note&token={}".format(self.list[0],self.list[1])
             resp = requests.get(joplinSearch,timeout=5)
