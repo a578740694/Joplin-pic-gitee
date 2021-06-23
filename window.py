@@ -137,7 +137,7 @@ class GridLayout(QWidget):
 
             #备份笔记 防止修改出错
             date = datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]
-            f = open(self.__backup + os.sep +title + "_" + date + ".md","w+")
+            f = open(self.__backup + os.sep +title + "_" + date + ".md","w+",encoding='utf-8')
             f.write(body)
             f.close();
 
@@ -150,15 +150,14 @@ class GridLayout(QWidget):
 
                     #获取网络图片并转为base64
                     picData = requests.get(addr,timeout=20,headers=headers)
-                    if(picData.status_code != 200):
-                        self.__log.logger.error(picData.content)
+                    if(str(picData.status_code)[0] != "2"):
+                        self.__log.logger.error(bytes.decode(picData.content))
                         raise Exception("图片下载失败")
 
                     base = base64.b64encode(picData.content)
                     time_tup = datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]
 
                     path = self.list[4] + "/" + time_tup + ".png"
-                    files.append(path)
 
                     url = "https://gitee.com/api/v5/repos/{}/{}/contents/{}"
                     postUrl = url.format(self.list[3],self.list[5],path)
@@ -166,7 +165,12 @@ class GridLayout(QWidget):
 
                     #上传图片到Gitee 并返回图片地址
                     resp = requests.post(postUrl,data=params,timeout=20)
+                    if(str(resp.status_code)[0] != "2"):
+                        self.__log.logger.error(bytes.decode(resp.content))
+                        raise Exception("图片上传失败")
+
                     pic = resp.json().get("content").get("download_url")
+                    files.append(path)
 
                 except Exception as e:
                     if len(files) != 0:

@@ -9,7 +9,7 @@ class Logger(object):
         'crit':logging.CRITICAL
     }#日志级别关系映射
 
-    def __init__(self,filename,level='info',fmt='%(asctime)s - %(levelname)s: %(message)s'):
+    def __init__(self,filename,level='info',fmt='%(asctime)s - %(thread)d - %(levelname)s: %(message)s'):
         self.logger = logging.getLogger(filename)
         format_str = logging.Formatter(fmt)#设置日志格式
         self.logger.setLevel(self.level_relations.get(level))#设置日志级别
