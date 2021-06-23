@@ -146,7 +146,6 @@ class GridLayout(QWidget):
                 try:
                     #使用正则表达式查询 笔记内容中的 图片链接
                     addr = v[1];
-
                     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36"}
 
                     #获取网络图片并转为base64
@@ -168,16 +167,25 @@ class GridLayout(QWidget):
                     #上传图片到Gitee 并返回图片地址
                     resp = requests.post(postUrl,data=params,timeout=20)
                     pic = resp.json().get("content").get("download_url")
+
+                    if(len(files) == 2):
+                        raise Exception()
                 except Exception as e:
                     if len(files) != 0:
-                        #如果请求失败 或者 获取不到数据 删除之前上传的文件
-                        getUrl = url.format(self.list[3],self.list[5],self.list[4]) + "?access_token=" + self.list[2]
-                        sha = requests.get(getUrl,timeout=20).json().get("sha")
 
-                        params["sha"] = sha
+                        params["message"] = "删除图片"
+                        del params["content"]
+
                         for file in files:
+                            #如果请求失败 或者 获取不到数据 删除之前上传的文件
+                            getUrl = url.format(self.list[3],self.list[5],file) + "?access_token=" + self.list[2]
+                            sha = requests.get(getUrl,timeout=20).json().get("sha")
+
+                            params["sha"] = sha
                             params["path"] = file
-                            requests.delete(postUrl,data=params,timeout=20)
+                            deleteUrl = url.format(self.list[3],self.list[5],file)
+
+                            requests.delete(deleteUrl,data=params,timeout=20)
 
                     raise Exception(e)
                 else:
